@@ -1,0 +1,49 @@
+Package: shinyCohortBuilder
+Type: Package
+Title: Modular Cohort-Building Framework for Analytical Dashboards
+Version: 0.1
+Authors@R: 
+    c(person('Krystian', 'Igras', 
+             email = 'krystian8207@gmail.com', 
+             role = c('cre', 'aut')),
+      person('Kamil', 'Wais', 
+             email = 'kamil.wais@gmail.com', 
+             role = c('aut')),
+      person('Adam', 'Foryś',
+             role = "ctb"))
+Maintainer: Krystian Igras <krystian8207@gmail.com>
+Description: You can easily add advanced cohort-building component
+    to your analytical dashboard or simple 'Shiny' app.
+    Then you can instantly start building cohorts using multiple
+    filters of different types, filtering datasets, and filtering steps.
+    Filters can be complex and data-specific, and together
+    with multiple filtering steps you can use complex filtering rules.
+    The cohort-building sidebar panel allows you to easily
+    work with filters, add and remove filtering steps.
+    It helps you with handling missing values during filtering,
+    and provides instant filtering feedback with filter feedback plots.
+    The GUI panel is not only compatible with native shiny
+    bookmarking, but also provides reproducible R code.
+License: MIT + file LICENSE
+Depends: R (>= 3.5.0)
+Imports: magrittr, glue, bslib, jsonlite, purrr, ggplot2, ggiraph,
+        htmltools, shiny, shinyWidgets (>= 0.7.0), dplyr, cohortBuilder
+        (>= 0.1), tryCatchLog, highr, shinyGizmo, rlang (>= 1.0),
+        tibble
+Suggests: pkgload, packer, sass, knitr, rmarkdown, testthat (>= 3.0.0)
+Encoding: UTF-8
+RoxygenNote: 7.2.0
+VignetteBuilder: knitr
+Collate: 'shinyCohortBuilder-package.R' 'ui_utils.R' 'actions.R'
+        'renders.R' 'filter_discrete.R' 'filter_range.R'
+        'filter_date_range.R' 'filter_discrete_text.R'
+        'filter_multi_discrete.R' 'app.R' 'cb_layer.R' 'source.R'
+        'source_tblist.R'
+Config/testthat/edition: 3
+NeedsCompilation: no
+Packaged: 2022-06-23 08:52:37 UTC; krystian
+Author: Krystian Igras [cre, aut],
+  Kamil Wais [aut],
+  Adam Foryś [ctb]
+Repository: CRAN
+Date/Publication: 2022-06-23 18:10:05 UTC

@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Implementing custom GUI filter layer</title>
+
+<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Implementing custom GUI filter layer</h1>
+
+
+
+<p>In this document you’ll learn how to write custom filter controller for the selected filter.</p>
+<div id="gui-filter-layer-as-a-s3-method" class="section level2">
+<h2>GUI Filter Layer as a S3 Method</h2>
+<p>When working with <code>cohortBuilder</code> in order to configure filter you need to precise its type:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cohortBuilder)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;cohortBuilder&#39;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:stats&#39;:</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     filter, step</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>iris_source <span class="ot">&lt;-</span> <span class="fu">set_source</span>(<span class="fu">tblist</span>(<span class="at">iris =</span> iris))</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>species_filter <span class="ot">&lt;-</span> <span class="fu">filter</span>(</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">&quot;discrete&quot;</span>, </span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">id =</span> <span class="st">&quot;species&quot;</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">dataset =</span> <span class="st">&quot;iris&quot;</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">variable =</span> <span class="st">&quot;Species&quot;</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">value =</span> <span class="st">&quot;setosa&quot;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>Such filter evaluated on Source (the operation happens within the Cohort) becomes an object of class equal to the filter type:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>evaled_filter <span class="ot">&lt;-</span> <span class="fu">species_filter</span>(iris_source)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(evaled_filter)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;cb_filter&quot; &quot;discrete&quot;</span></span></code></pre></div>
+<p>For the further needs let’s highlight what methods and parameters are originally stored withing the evaluated filter object:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(evaled_filter, <span class="at">give.attr =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; List of 10</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  $ id          : chr &quot;species&quot;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  $ type        : &#39;discrete&#39; chr &quot;discrete&quot;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  $ name        : chr &quot;species&quot;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  $ input_param : chr &quot;value&quot;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  $ filter_data :function (data_object)  </span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  $ get_stats   :function (data_object, name)  </span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  $ plot_data   :function (data_object)  </span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  $ get_params  :function (name)  </span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  $ get_data    :function (data_object)  </span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  $ get_defaults:function (data_object, cache_object)</span></span></code></pre></div>
+<p><code>shinyCohortBuilder</code> extends the filter attaching GUI-specific methods to it using <code>.gui_filter</code> S3 method. The methods are available at <code>filter$gui</code> object.</p>
+<p>So, in order to implement custom filter controller we need to create <code>.gui_filter.&lt;filter-type&gt;</code> function.</p>
+<p>The method takes filter (evaluated on source) as its argument and should return a list of the below objects:</p>
+<ul>
+<li><code>input</code> - UI structure defining filter input controllers.</li>
+<li><code>feedback</code> - List defining feedback plot output.</li>
+<li><code>server</code> - Optional server-side expression attached to filter panel (e.g. filter specific observers).</li>
+<li><code>update</code> - An expression used for updating filter panel based on its configuration.</li>
+<li><code>post_stats</code> - TRUE if post statistics are displayed in filter controller (e.g. for discrete filter). If FALSE, some operations are skipped which results with better performance.</li>
+<li><code>multi_input</code> - TRUE if multiple input controllers are used for providing filter value (e.g. range input where both numericInput and sliderInput are used). If FALSE, some operations are skipped which results with better performance.</li>
+</ul>
+<p>Below we describe requirements and exact role of each object. We will base the description using “discrete” filter example.</p>
+<div id="input" class="section level3">
+<h3>input</h3>
+<p><code>input</code> is the function returning the UI structure of filter input controllers (the content visible when filter is enrolled in filtering panel).</p>
+<p>It takes two argument:</p>
+<ul>
+<li><code>input_id</code> - Concatenation of step_id and filter_id (plus namespace). Can be used as an input controller id (but doesn’t have to).</li>
+<li><code>cohort</code> - The Cohort object.</li>
+</ul>
+<p>Example of implementation (simplified version used for “discrete” filter):</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>.gui_filter.discrete <span class="ot">&lt;-</span> <span class="cf">function</span>(filter, ...) {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">input =</span> <span class="cf">function</span>(input_id, cohort) {</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>      shiny<span class="sc">::</span><span class="fu">tagList</span>(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">.cb_input</span>(</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>          <span class="fu">do.call</span>(</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            shiny<span class="sc">::</span>checkboxGroupInput,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            <span class="fu">discrete_input_params</span>(filter, input_id, cohort, ...)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>          ),</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>          filter<span class="sc">$</span>input_param</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">.cb_input</span>(</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>          <span class="fu">keep_na_input</span>(input_id, filter, cohort),</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot;keep_na&quot;</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># other objects</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>What we can realize, based on the construction, is that inside of the <code>input</code> function we can use not only its arguments but also <code>filter</code> object from the parent environment. This way we can access all the methods and metadata originally attached to the filter (i.e. its parameters via <code>filter$get_params()</code>).</p>
+<p>As we can see the function returns a list (<code>tagList</code>) of two input controllers:</p>
+<ul>
+<li><code>checkboxGroupInput</code> - responsible for setting up filter value,</li>
+<li><code>keep_na_input</code> - helper function returning a checkbox responsible for inclusion/exclusion of NA values (value of <code>keep_na</code> filter argument).</li>
+</ul>
+<p>The more important both input controllers are wrapped into <code>.cb_input</code> function.</p>
+<p>Let’s first describe to meaning of <code>.cb_input</code>.</p>
+<p>The function is responsible for registering any changes in input controller and updating the corresponding filter argument (with the value of controller). You may spot, we pass <code>filter$input_param</code> and <code>&quot;keep_na&quot;</code> as the second argument of <code>.cb_input</code> for <code>checkboxGroupInput</code> and <code>keep_na_input</code> respectively. The second argument informs <code>shinyCohortBuilder</code> via <code>.cb_input</code> which argument exactly should be updated in filter while changing the controller input.</p>
+<p>This is the reason why do we keep the name of filter parameter responsible for data filtering (<code>input_param</code>) inside of the <code>cohortBuilder</code>’s filter (the name may differ for various filter types i.e. “value” for discrete filter, “range” for range filter).</p>
+<p>The second effect of <code>.cb_input</code> is that input controllers wrapped into the function are sensitive only browser-site actions. That means filter arguments are updated only when user changes its value in the filtering panel - updating the input from server with <code>update*</code> function will affect only the controller visually.</p>
+<p>Such effect is taken to assure no unneeded reactivity triggers are run. To make it more clear let’s consider a situation where filter panel consists of one discrete filter and we display post statistics nearby each checkbox option.</p>
+<p><img src="data:image/png;base64,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" /></p>
+<p>When changing selection in the filter we:</p>
+<ol style="list-style-type: decimal">
+<li>Update the filter value in Cohort.</li>
+<li>Trigger data calculations.</li>
+<li>Update post statistics for the filter in Cohort.</li>
+<li>Update input controller choices having new statistics included.</li>
+</ol>
+<p>The last step is taken by using <code>update*</code> function, what triggers <code>shiny:inputchanged</code> JS event that <code>shinyCohortBuilder</code> uses for updating filter arguments. Such behavior results with another round of the above steps what could end up with having reactivity loop. Using <code>.cb_input</code> assures <code>shiny:inputchanged</code> JS event doesn’t trigger another filter parameters update when called using <code>update*</code> method.</p>
+<p>Let’s move now to describe further assumptions while writing custom <code>input</code> method for <code>.gui_filter</code>.</p>
+<p>Looking at the below code sample:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">do.call</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  shiny<span class="sc">::</span>checkboxGroupInput,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">discrete_input_params</span>(filter, input_id, cohort, ...)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>We can see internal function <code>discrete_input_params</code> is used to create a list of parameters sent to <code>shiny::checkboxGroupInput</code>.</p>
+<p>While writing the function you should take into consideration the below assumptions:</p>
+<ol style="list-style-type: decimal">
+<li>When no data exists in the previous step the parameters should return an empty input controller.</li>
+</ol>
+<p>For discrete filter (<code>checkboxGroupInput</code>) we achieve this with:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span>cohort<span class="sc">$</span><span class="fu">get_cache</span>(step_id, filter_id, <span class="at">state =</span> <span class="st">&quot;pre&quot;</span>)<span class="sc">$</span>n_data) {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(<span class="at">inputId =</span> input_id, <span class="at">choices =</span> <span class="fu">character</span>(<span class="dv">0</span>), <span class="at">selected =</span> <span class="fu">character</span>(<span class="dv">0</span>), <span class="at">label =</span> <span class="cn">NULL</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>where:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>step_id <span class="ot">&lt;-</span> filter<span class="sc">$</span>step_id</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>filter_id <span class="ot">&lt;-</span> filter<span class="sc">$</span>id</span></code></pre></div>
+<p>It’s recommended to use cached statistics saved in the Cohort object to minimize the amount of operations. All the cached information for the specific filter are computed with <code>get_stats</code> filter method.</p>
+<p>In case of discrete filter (for “tblist” source data type) it computes:</p>
+<ul>
+<li><code>choices</code> - named list storing counts for each variable level,</li>
+<li><code>n_data</code> - integer storing number of non-missing values,</li>
+<li><code>n_missing</code> - integer storing number of <code>NA</code>s</li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li>When filter value is NA, the controller should select all the available options (or range).</li>
+</ol>
+<p>You may get the current filter parameters with:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>filter_params <span class="ot">&lt;-</span> filter<span class="sc">$</span><span class="fu">get_params</span>()</span></code></pre></div>
+<p>and value with:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>filter_params[[filter<span class="sc">$</span>input_param]]</span></code></pre></div>
+<p>Extracting all the possible options can be done with:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  cohort<span class="sc">$</span><span class="fu">get_cache</span>(step_id, filter_id, <span class="at">state =</span> <span class="st">&quot;pre&quot;</span>)<span class="sc">$</span>choices  </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li>Filter controller choices should be based on the previous step.</li>
+</ol>
+<p>This can be easily extracted using previous step cache:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  cohort<span class="sc">$</span><span class="fu">get_cache</span>(step_id, filter_id, <span class="at">state =</span> <span class="st">&quot;pre&quot;</span>)<span class="sc">$</span>choices  </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<ol start="4" style="list-style-type: decimal">
+<li>When <a href="shinyCohortBuilder.html#filter-vs-filter-controller">value mapping</a> is defined for the filter it should be used to convert choices labels accordingly.</li>
+</ol>
+<p>You can check is value mapping is defined with:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="sc">!</span><span class="fu">is.null</span>(filter_params<span class="sc">$</span>value_mapping)</span></code></pre></div>
+<p>and access the value mapping function with:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>cohort<span class="sc">$</span><span class="fu">get_source</span>()<span class="sc">$</span>attributes<span class="sc">$</span>value_mappings[[filter_params<span class="sc">$</span>value_mapping]]</span></code></pre></div>
+<ol start="5" style="list-style-type: decimal">
+<li>When the filters displays pre/post statistics (i.e. discrete filter does) you should assure the ones are included in according filter labels.</li>
+</ol>
+<p>For this case you may use a helper <code>.pre_post_stats</code> (or <code>.pre_post_stats_text</code>) function:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">.pre_post_stats_text</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="sc">&lt;</span>choices labels names vector<span class="sc">&gt;</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">current =</span> <span class="sc">&lt;</span>current step statistics vector<span class="sc">&gt;</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">previous =</span> <span class="sc">&lt;</span>previous step statistics vector<span class="sc">&gt;</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">stats =</span> <span class="sc">&lt;</span><span class="st">&quot;pre, post&quot;</span>, both or <span class="cn">NULL</span><span class="sc">&gt;</span> <span class="co"># it&#39;s recommended to use `stats = cohort$attributes$stats` to inherit the option from Cohort configuration</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>which returns labels with the selected statistics and brackets added.</p>
+<p>The function returns labels in an HTML structure attaching proper classes to the current step labels. Such (HTML) class is used to grey out the label when working with <code>Run Button</code> feature.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">.pre_post_stats_text</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>),</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">current =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">previous =</span> <span class="dv">3</span><span class="sc">:</span><span class="dv">4</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">stats =</span> <span class="fu">c</span>(<span class="st">&quot;pre&quot;</span>, <span class="st">&quot;post&quot;</span>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &lt;span&gt;A (&lt;span class = &#39;cb_delayed&#39;&gt;1&lt;/span&gt; / 3)&lt;/span&gt;</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &lt;span&gt;B (&lt;span class = &#39;cb_delayed&#39;&gt;2&lt;/span&gt; / 4)&lt;/span&gt;</span></span></code></pre></div>
+<ol start="6" style="list-style-type: decimal">
+<li>The filter controller should not have any label attached.</li>
+</ol>
+<p>For <code>checkboxGroupInput</code> (and most of shiny controllers) this can be achieved with <code>label = NULL</code>.</p>
+</div>
+<div id="feedback" class="section level3">
+<h3>feedback</h3>
+<p><code>input</code> is the function returning the UI structure of filter input controllers (the content visible when filter is enrolled in filtering panel).</p>
+<p>It takes two argument:</p>
+<ul>
+<li><code>input_id</code> - Concatenation of step_id and filter_id (plus namespace). Can be used as an input controller id (but doesn’t have to).</li>
+<li><code>cohort</code> - The Cohort object.</li>
+<li><code>empty</code> - FALSE by default. When NULL (feedback plot are turned off) feedback should return no value. When TRUE (no valid data exists in the previous filtering step, i.e. number of rows is zero) an empty plot should be returned (preferable with very small height).</li>
+</ul>
+<p>The function should return list of three objects:</p>
+<ul>
+<li><code>plot_id</code> - id of feedback plot output (preferably modification of <code>input_id</code> including namespace),</li>
+<li><code>output_fun</code> - plot output UI placeholder function,</li>
+<li><code>render_fun</code> - plot output rendering logic (excluding output assignment).</li>
+</ul>
+<p>Example of implementation (simplified version used for “discrete” filter):</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>.gui_filter.discrete <span class="ot">&lt;-</span> <span class="cf">function</span>(filter, ...) {</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">feedback =</span> <span class="cf">function</span>(input_id, cohort, <span class="at">empty =</span> <span class="cn">FALSE</span>) {</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">list</span>(</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot_id =</span> shiny<span class="sc">::</span><span class="fu">NS</span>(input_id, <span class="st">&quot;feedback_plot&quot;</span>) ,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">output_fun =</span> ggiraph<span class="sc">::</span>girafeOutput,</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">render_fun =</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(empty)) {</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>          ggiraph<span class="sc">::</span><span class="fu">renderGirafe</span>({</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span>(empty) { <span class="co"># when no data in parent step</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>              <span class="fu">return</span>(</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>                ggiraph<span class="sc">::</span><span class="fu">girafe</span>(</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ggobj      =</span> ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(),</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">width_svg  =</span> <span class="dv">10</span>,</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>                  <span class="at">height_svg =</span> <span class="fl">0.1</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>                )</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>              )</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>            step_id <span class="ot">&lt;-</span> filter<span class="sc">$</span>step_id</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>            filter_id <span class="ot">&lt;-</span> filter<span class="sc">$</span>id</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>            filter_cache <span class="ot">&lt;-</span> cohort<span class="sc">$</span><span class="fu">get_cache</span>(step_id, filter_id, <span class="at">state =</span> <span class="st">&quot;pre&quot;</span>)</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>            filter_value <span class="ot">&lt;-</span> <span class="fu">extract_selected_value</span>(filter<span class="sc">$</span><span class="fu">get_params</span>()<span class="sc">$</span>value, filter_cache<span class="sc">$</span>choices, <span class="cn">FALSE</span>)</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>            plot_data <span class="ot">&lt;-</span> filter_cache<span class="sc">$</span>choices[filter_value]</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>            n_missing <span class="ot">&lt;-</span> filter_cache<span class="sc">$</span>n_missing</span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (<span class="fu">identical</span>(filter<span class="sc">$</span><span class="fu">get_params</span>()<span class="sc">$</span>keep_na, <span class="cn">FALSE</span>)) {</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>              n_missing <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>            <span class="fu">plot_feedback_bar</span>(plot_data, n_missing)</span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>          })</span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># other methods</span></span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>Details:</p>
+<ul>
+<li><code>render_fun</code> should be wrapped within <code>if (!is.null(empty)) {}</code> if claim.</li>
+<li>Inside the rendering function body, return an empty plot when <code>empty = TRUE</code>.</li>
+<li>It’s recommended to generate plot based on cached Cohort statistics. The filter cache can be accessed with: <code>cohort$get_cache(step_id, filter_id, state = &quot;pre&quot;)</code>, where:</li>
+</ul>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>step_id <span class="ot">&lt;-</span> filter<span class="sc">$</span>step_id</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>filter_id <span class="ot">&lt;-</span> filter<span class="sc">$</span>id</span></code></pre></div>
+</div>
+<div id="server" class="section level3">
+<h3>server</h3>
+<p>This is an optional method providing extra logic to filter controller in the application server. The function is called only once when filter controller is rendered.</p>
+<p>In case of discrete filter, the function is used to extend logic for feedback plot. Whenever a field related to specific value is clicked on the plot it result with selecting the value in input controller.</p>
+<p>So we define there an observer, that listens to plot click action and triggers accordingly “update_filter” action:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>.gui_filter.discrete <span class="ot">&lt;-</span> <span class="cf">function</span>(filter, ...) {</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">server =</span> <span class="cf">function</span>(input_id, input, output, session, cohort) {</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>      shiny<span class="sc">::</span><span class="fu">observeEvent</span>(input[[shiny<span class="sc">::</span><span class="fu">NS</span>(input_id, <span class="st">&quot;feedback_plot_selected&quot;</span>)]], {</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>        value <span class="ot">&lt;-</span> input[[shiny<span class="sc">::</span><span class="fu">NS</span>(input_id, <span class="st">&quot;feedback_plot_selected&quot;</span>)]]</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.na</span>(value)) {</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>          <span class="fu">.trigger_action</span>(session, <span class="st">&quot;update_filter&quot;</span>, <span class="at">params =</span> <span class="fu">list</span>(</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">step_id =</span> filter<span class="sc">$</span>step_id, <span class="at">filter_id =</span> filter<span class="sc">$</span>id,</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">input_name =</span> filter<span class="sc">$</span>input_param, <span class="at">input_value =</span> value,</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">run_flow =</span> <span class="cn">FALSE</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>          ))</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>      }, <span class="at">ignoreInit =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> <span class="fu">.save_observer</span>(input_id, session)</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># other methods</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>You may spot here a usage of <code>.save_observer</code>, to which the observer is passed. The method is used to save the observer in application memory, so that the observer is destroyed whenever the filter is removed.</p>
+<p>The action is taken to prevent observers <a href="https://appsilon.com/how-to-safely-remove-a-dynamic-shiny-module/">accumulation</a>.</p>
+</div>
+<div id="update" class="section level3">
+<h3>update</h3>
+<p><code>update</code> is the function defining how filter input controllers should be updated based on the previous and current step data.</p>
+<p>The method is called in the below scenarios:</p>
+<ul>
+<li>when previous filtering step was modified,</li>
+<li>when filter displays post statistics (i.e. discrete filer) and the current data changed (for example by making any changes in the current step),</li>
+<li>when filter GUI panel is using multiple input controllers and one of them has changed,</li>
+<li>when “Clear Step” button is pressed,</li>
+<li>when <code>update_filter</code> action was triggered directly (advanced case)</li>
+</ul>
+<p><code>update</code> function is strongly related to the <code>input</code> one. The parameters passed to related <code>update*</code> methods should follow the same assumptions as stated for <code>input</code>. More to that there is one extra rule regarding “Clear Step” scenario which we describe below.</p>
+<p>The update function should have the below parameters defined:</p>
+<ul>
+<li><code>session</code> - Shiny session object passed to <code>update*</code> methods.</li>
+<li><code>input_id</code> - The same ID as passed to <code>input</code>.</li>
+<li><code>cohort</code> - Cohort object.</li>
+<li><code>reset</code> - If TRUE, the <code>update</code> method is called due to click of “Clear Step” button.</li>
+</ul>
+<p>Below we present the sample of <code>update</code> method used for discrete filter:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>.gui_filter.discrete <span class="ot">&lt;-</span> <span class="cf">function</span>(filter, ...) {</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">update =</span> <span class="cf">function</span>(session, input_id, cohort, <span class="at">reset =</span> <span class="cn">FALSE</span>, ...) {</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>      update_params <span class="ot">&lt;-</span> <span class="fu">discrete_input_params</span>(filter, input_id, cohort, <span class="at">reset =</span> reset, <span class="at">update =</span> <span class="cn">TRUE</span>, ...)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">do.call</span>(</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>        shiny<span class="sc">::</span>updateCheckboxGroupInput,</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">append</span>(</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>          <span class="fu">list</span>(<span class="at">session =</span> session),</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>          update_params</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">.update_keep_na_input</span>(session, input_id, filter, cohort)</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># other methods</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>As you can see, we reuse <code>discrete_input_params</code> function for generating the parameters, with two extra arguments passed to it:</p>
+<ul>
+<li><code>reset</code> - the information that states “Clear Step” was clicked,</li>
+<li><code>update</code> - an indicator that states we generate parameters for <code>update</code> method.</li>
+</ul>
+<p>Now let’s highlight how <code>reset</code> and <code>update</code> argument affect the returned parameters:</p>
+<ol style="list-style-type: decimal">
+<li>When <code>reset = TRUE</code> controller should select all the available options (or range).</li>
+</ol>
+<p>Again, all the possible options can be extracted with:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  cohort<span class="sc">$</span><span class="fu">get_cache</span>(step_id, filter_id, <span class="at">state =</span> <span class="st">&quot;pre&quot;</span>)<span class="sc">$</span>choices  </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>When <code>update = TRUE</code> the filter controller label should be cleared.</li>
+</ol>
+<p>There is a small difference comparing to case when label is defined for initializing the controller. In the case <code>label = NULL</code> but for <code>update</code> the valid value id <code>label = character(0)</code>.</p>
+<p>So we only need to add:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>label <span class="ot">=</span> <span class="cf">if</span> (update) <span class="fu">character</span>(<span class="dv">0</span>) <span class="cf">else</span> <span class="cn">NULL</span></span></code></pre></div>
+<p>Looking at the code sample for <code>update</code> above we may realize, the usage of <code>.update_keep_na_input</code>. You can use the function whenever you use <code>.keep_na_input</code> in <code>input</code> function.</p>
+</div>
+<div id="post_stats" class="section level3">
+<h3>post_stats</h3>
+<p>Static logical value informing whether the filter can display post statistics. When TRUE, the filter will be updated (using attached <code>update</code> method) whenever any other filter is changed (to assure up to date value of post statistic).</p>
+</div>
+<div id="multi_input" class="section level3">
+<h3>multi_input</h3>
+<p>Logical value informing whether the filter GUI panel uses multiple input controllers to specify the filter value (range filter case when both slider and numeric input are used). When TRUE, <code>shinyCohortBuilder</code> will be informed to update input controller whenever the other one changes.</p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Creating custom source extension</title>
+
+<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Creating custom source extension</h1>
+
+
+
+<p>If you want to use <code>shinyCohortBuilder</code> with a custom source type, a set of methods needs to be defined.</p>
+<p>Currently there exists one official extension <code>cohortBuilder.db</code> package that allows you to use <code>shinyCohortBuilder</code> (and <code>cohortBuilder</code>) with database connections.</p>
+<p>The goal of this document is to explain how to create custom extensions to <code>shinyCohortBuilder</code>.</p>
+<p>In general to create the custom layer you need to create an R package where:</p>
+<ol style="list-style-type: decimal">
+<li>The custom Source extension for <code>cohortBuilder</code> methods is implemented (see. <code>vignettes(&quot;custom-extensions&quot;, package = &quot;cohortBuilder&quot;)</code>).</li>
+<li>A set of integration S3 methods for <code>shinyCohortBuilder</code> are implemented.</li>
+<li>Extra filters (added in the extension) GUI layers are implemented (see <a href="gui-filter-layer.html">custom GUI filters</a>).</li>
+</ol>
+<p>If you have <code>cohortBuilder</code> integration ready for the selected source <code>type</code> (a new package named <code>cohortBuilder.&lt;type&gt;</code>), the next step is to add <code>shinyCohortBuilder</code> integration.</p>
+<p>Below we describe all the required and optional methods you need to define within the created package.</p>
+<ol style="list-style-type: decimal">
+<li><strong><code>.render_filters</code> - method used to define structure for filters rendering in a selected step</strong></li>
+</ol>
+<p>Required parameters:</p>
+<ul>
+<li><code>source</code> - Source object.</li>
+<li><code>cohort</code> - Cohort object.</li>
+<li><code>step_id</code> - Id of the filtering step.</li>
+<li><code>ns</code> - Namespace function.</li>
+<li><code>...</code> - Unused, added for S3 integration only.</li>
+</ul>
+<p>Details:</p>
+<ul>
+<li>The method should return HTML structure including statistics output placeholder and a list of filter renderings.</li>
+<li>In order to get all the filters included in the selected step use <code>cohort$get_step(step_id)$filters</code>.</li>
+<li>Data statistics outputs should be consistent with <code>.update_data_stats</code> method described below.</li>
+<li>Each filter should be rendered with usage of <code>.render_filter</code> method.</li>
+<li>List of filters rendering should be wrapped into <code>shiny::div(class = &quot;cb_filters&quot;, `data-step_id` = step_id)</code>.</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li><code>shinyCohortBuilder</code> - default method</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>.render_filters.default <span class="ot">&lt;-</span> <span class="cf">function</span>(source, cohort, step_id, ns, ...) {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  step <span class="ot">&lt;-</span> cohort<span class="sc">$</span><span class="fu">get_step</span>(step_id)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  shiny<span class="sc">::</span><span class="fu">tagList</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    shiny<span class="sc">::</span><span class="fu">htmlOutput</span>(<span class="fu">ns</span>(<span class="fu">paste0</span>(step_id, <span class="st">&quot;-stats&quot;</span>)), <span class="at">class =</span> <span class="st">&quot;scb_data_stats&quot;</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    step<span class="sc">$</span>filters <span class="sc">%&gt;%</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>      purrr<span class="sc">::</span><span class="fu">map</span>(<span class="sc">~</span> <span class="fu">.render_filter</span>(.x, step_id, cohort, <span class="at">ns =</span> ns)) <span class="sc">%&gt;%</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>      shiny<span class="sc">::</span><span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;cb_filters&quot;</span>, <span class="st">`</span><span class="at">data-step_id</span><span class="st">`</span> <span class="ot">=</span> step_id)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<ul>
+<li><code>shinyCohortBuilder</code> - tblist data class</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>.render_filters.tblist <span class="ot">&lt;-</span> <span class="cf">function</span>(source, cohort, step_id, ns, ...) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  step <span class="ot">&lt;-</span> cohort<span class="sc">$</span><span class="fu">get_step</span>(step_id)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_filters</span>(cohort<span class="sc">$</span><span class="fu">get_source</span>(), step<span class="sc">$</span>filters) <span class="sc">%&gt;%</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    purrr<span class="sc">::</span><span class="fu">imap</span>(<span class="sc">~</span> <span class="fu">dataset_filters</span>(.x, .y, step_id, cohort, <span class="at">ns =</span> ns)) <span class="sc">%&gt;%</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    shiny<span class="sc">::</span><span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;cb_filters&quot;</span>, <span class="st">`</span><span class="at">data-step_id</span><span class="st">`</span> <span class="ot">=</span> step_id)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>In this example we group all the defined filters by related datasets from source (<code>group_filters</code>), and attach a separate statistics placeholder for each dataset (dataset_filters).</p>
+<ul>
+<li><code>cohortBuilder.db</code> - db data class</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>render_filters.db <span class="ot">&lt;-</span> <span class="cf">function</span>(source, cohort, step_id, ns) {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  step <span class="ot">&lt;-</span> cohort<span class="sc">$</span><span class="fu">get_step</span>(step_id)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_filters_db</span>(cohort<span class="sc">$</span><span class="fu">get_source</span>(), step<span class="sc">$</span>filters) <span class="sc">%&gt;%</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    purrr<span class="sc">::</span><span class="fu">imap</span>(<span class="sc">~</span> <span class="fu">dataset_filters_db</span>(.x, .y, step_id, cohort, <span class="at">ns =</span> ns)) <span class="sc">%&gt;%</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;cb_filters&quot;</span>, <span class="st">`</span><span class="at">data-step_id</span><span class="st">`</span> <span class="ot">=</span> step_id)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li><strong><code>.update_data_stats</code> - logic for updating data statistics</strong></li>
+</ol>
+<p>Required parameters:</p>
+<ul>
+<li><code>source</code> - Source object.</li>
+<li><code>step_id</code> - Id of the filtering step.</li>
+<li><code>cohort</code> - Cohort object.</li>
+<li><code>session</code> - Shiny session object.</li>
+<li><code>...</code> - Unused, added for S3 integration only.</li>
+</ul>
+<p>Details:</p>
+<ul>
+<li>The function should define rendering output for consistent with the output placeholder stated within <code>.render_filters</code>.</li>
+<li>It’s recommended the statistics are taken from the Cohort cache <code>cohort$get_cache(step_id, state = &quot;pre&quot;)</code>.</li>
+<li>It’s recommended the output performs previous step data validation (in terms of data existence) and returns descriptive message to the user.</li>
+<li>Use <code>cohort$attributes$stats</code> to get displayed statistics state chosen by the user (“pre”, “post”, both or NULL).</li>
+<li>For printing the statistics use <code>.pre_post_stats</code> (or <code>.pre_post_stats_text</code>)` which returns formatted statistics output.</li>
+<li>You may directly assign the rendering to the output or use <code>.sendOutput</code> method (useful when sending output in loop see “tblist” source example below).</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li><code>shinyCohortBuilder</code> - default method</li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>.update_data_stats.default <span class="ot">&lt;-</span> <span class="cf">function</span>(source, step_id, cohort, session, ...) {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  ns <span class="ot">&lt;-</span> session<span class="sc">$</span>ns</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  stats <span class="ot">&lt;-</span> cohort<span class="sc">$</span>attributes<span class="sc">$</span>stats</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  session<span class="sc">$</span>output[[<span class="fu">paste0</span>(step_id, <span class="st">&quot;-stats&quot;</span>)]] <span class="ot">&lt;-</span> shiny<span class="sc">::</span><span class="fu">renderUI</span>({</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    previous <span class="ot">&lt;-</span> cohort<span class="sc">$</span><span class="fu">get_cache</span>(step_id, <span class="at">state =</span> <span class="st">&quot;pre&quot;</span>)<span class="sc">$</span>n_rows</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span>previous <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(<span class="st">&quot;No data selected in previous step.&quot;</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    current <span class="ot">&lt;-</span> cohort<span class="sc">$</span><span class="fu">get_cache</span>(step_id, <span class="at">state =</span> <span class="st">&quot;post&quot;</span>)<span class="sc">$</span>n_rows</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">.pre_post_stats</span>(current, previous, <span class="at">percent =</span> <span class="cn">TRUE</span>, <span class="at">stats =</span> stats)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<ul>
+<li><code>shinyCohortBuilder</code> - tblist data class</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>.update_data_stats.tblist <span class="ot">&lt;-</span> <span class="cf">function</span>(source, step_id, cohort, session, ...) {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  stats <span class="ot">&lt;-</span> cohort<span class="sc">$</span>attributes<span class="sc">$</span>stats</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  step <span class="ot">&lt;-</span> cohort<span class="sc">$</span><span class="fu">get_step</span>(step_id)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  dataset_names <span class="ot">&lt;-</span> <span class="fu">names</span>(cohort<span class="sc">$</span><span class="fu">get_source</span>()<span class="sc">$</span>attributes<span class="sc">$</span>datasets)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  data_filters <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_chr</span>(step<span class="sc">$</span>filters, get_filter_dataset)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  dataset_names <span class="ot">&lt;-</span> <span class="fu">intersect</span>(dataset_names, data_filters)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  dataset_names <span class="sc">%&gt;%</span> purrr<span class="sc">::</span><span class="fu">walk</span>(</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="fu">.sendOutput</span>(</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste0</span>(step_id, <span class="st">&quot;-stats_&quot;</span>, .x),</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>      shiny<span class="sc">::</span><span class="fu">renderUI</span>({</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        previous <span class="ot">&lt;-</span> cohort<span class="sc">$</span><span class="fu">get_cache</span>(step_id, <span class="at">state =</span> <span class="st">&quot;pre&quot;</span>)[[.x]]<span class="sc">$</span>n_rows</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="sc">!</span>previous <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>          <span class="fu">return</span>(<span class="st">&quot;No data selected in previous step.&quot;</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        current <span class="ot">&lt;-</span> cohort<span class="sc">$</span><span class="fu">get_cache</span>(step_id, <span class="at">state =</span> <span class="st">&quot;post&quot;</span>)[[.x]]<span class="sc">$</span>n_rows</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        <span class="fu">.pre_post_stats</span>(current, previous, <span class="at">percent =</span> <span class="cn">TRUE</span>, <span class="at">stats =</span> stats)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>      }),</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>      session</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<ul>
+<li><code>cohortBuilder.db</code></li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>update_data_stats.db <span class="ot">&lt;-</span> <span class="cf">function</span>(source, step_id, cohort, session) {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  stats <span class="ot">&lt;-</span> cohort<span class="sc">$</span>attributes<span class="sc">$</span>stats</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  dataset_names <span class="ot">&lt;-</span> source<span class="sc">$</span>attributes<span class="sc">$</span>tables</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  dataset_names <span class="sc">%&gt;%</span> purrr<span class="sc">::</span><span class="fu">walk</span>(</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> shinyCohortBuilder<span class="sc">::</span><span class="fu">sendOutput</span>(</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste0</span>(step_id, <span class="st">&quot;-stats_&quot;</span>, .x),</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>      shiny<span class="sc">::</span><span class="fu">renderUI</span>({</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        previous <span class="ot">&lt;-</span> cohort<span class="sc">$</span><span class="fu">get_cache</span>(step_id, <span class="at">state =</span> <span class="st">&quot;pre&quot;</span>)[[.x]]<span class="sc">$</span>n_rows</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="sc">!</span>previous <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>          <span class="fu">return</span>(<span class="st">&quot;No data selected in previous step.&quot;</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        current <span class="ot">&lt;-</span> cohort<span class="sc">$</span><span class="fu">get_cache</span>(step_id, <span class="at">state =</span> <span class="st">&quot;post&quot;</span>)[[.x]]<span class="sc">$</span>n_rows</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        shinyCohortBuilder<span class="sc">::</span><span class="fu">pre_post_stats</span>(current, previous, <span class="at">percent =</span> <span class="cn">TRUE</span>, <span class="at">stats =</span> stats)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>      })</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li><strong><code>autofilter</code> (optional) - automatically generate filters configuration based on Source data</strong></li>
+</ol>
+<p>Required parameters:</p>
+<ul>
+<li><code>source</code> - Source object,</li>
+<li><code>attach_as</code> - Should filters be added as the first step (<code>&quot;step&quot;</code>) or as available filters for configuration panel (<code>&quot;meta&quot;</code>),</li>
+<li><code>...</code> - Unused, added for S3 integration only.</li>
+</ul>
+<p>Details:</p>
+<ul>
+<li>Generate filters based on Source data (i.e. column types) using <code>cohortBuilder::filter</code>.</li>
+<li>When <code>attach_as = &quot;step&quot;</code> wrap them with <code>cohortBuilder::step</code> and attach to the Source using <code>add_step</code> method.</li>
+<li>When <code>attach_as = &quot;meta&quot;</code> attach filters to the <code>available_filters</code> Source attribute (<code>source$attributes$available_filters</code>).</li>
+<li>The method should return Source object.</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li><code>shinyCohortBuilder</code> - tblist data class</li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>autofilter.tblist <span class="ot">&lt;-</span> <span class="cf">function</span>(source, <span class="at">attach_as =</span> <span class="fu">c</span>(<span class="st">&quot;step&quot;</span>, <span class="st">&quot;meta&quot;</span>), ...) {</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  attach_as <span class="ot">&lt;-</span> rlang<span class="sc">::</span><span class="fu">arg_match</span>(attach_as)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  step_rule <span class="ot">&lt;-</span> source<span class="sc">$</span>dtconn <span class="sc">%&gt;%</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    purrr<span class="sc">::</span><span class="fu">imap</span>(<span class="sc">~</span><span class="fu">filter_rules</span>(.x, .y)) <span class="sc">%&gt;%</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unlist</span>(<span class="at">recursive =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    purrr<span class="sc">::</span><span class="fu">map</span>(<span class="sc">~</span><span class="fu">do.call</span>(cohortBuilder<span class="sc">::</span>filter, .)) <span class="sc">%&gt;%</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unname</span>()</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">identical</span>(attach_as, <span class="st">&quot;meta&quot;</span>)) {</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    source<span class="sc">$</span>attributes<span class="sc">$</span>available_filters <span class="ot">&lt;-</span> step_rule</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    source <span class="sc">%&gt;%</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>      cohortBuilder<span class="sc">::</span><span class="fu">add_step</span>(<span class="fu">do.call</span>(cohortBuilder<span class="sc">::</span>step, step_rule))</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(source)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<ol start="4" style="list-style-type: decimal">
+<li><strong><code>.available_filters_choices</code> - define choices for new step configuration panel</strong></li>
+</ol>
+<p>Required parameters:</p>
+<ul>
+<li><code>source</code> - Source object,</li>
+<li><code>cohort</code> - Cohort object,</li>
+<li><code>...</code> - Unused, added for S3 integration only.</li>
+</ul>
+<p>Details:</p>
+<ul>
+<li>The function should return <code>shinyWidgets::prepare_choices</code> output.</li>
+<li>The argument <code>value</code> of <code>prepare_choices</code> should point to filter ids.</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li><code>shinyCohortBuilder</code> - tblist data class</li>
+</ul>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>.available_filters_choices.tblist <span class="ot">&lt;-</span> <span class="cf">function</span>(source, cohort, ...) {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  available_filters <span class="ot">&lt;-</span> cohort<span class="sc">$</span>attributes<span class="sc">$</span>available_filters</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  choices <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map</span>(available_filters, <span class="cf">function</span>(x) {</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">name =</span> <span class="fu">as.character</span>(</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        shiny<span class="sc">::</span><span class="fu">div</span>(</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>          <span class="st">`</span><span class="at">data-tooltip-z-index</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">9999</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>          <span class="st">`</span><span class="at">data-tooltip</span><span class="st">`</span> <span class="ot">=</span> x<span class="sc">$</span><span class="fu">get_params</span>(<span class="st">&quot;description&quot;</span>),</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>          <span class="st">`</span><span class="at">data-tooltip-position</span><span class="st">`</span> <span class="ot">=</span> <span class="st">&quot;top right&quot;</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>          <span class="st">`</span><span class="at">data-tooltip-allow-html</span><span class="st">`</span> <span class="ot">=</span> <span class="st">&quot;true&quot;</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>          x<span class="sc">$</span>name</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">id =</span> x<span class="sc">$</span>id,</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">dataset =</span> x<span class="sc">$</span><span class="fu">get_params</span>(<span class="st">&quot;dataset&quot;</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  }) <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>()</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  shinyWidgets<span class="sc">::</span><span class="fu">prepare_choices</span>(choices, name, id, dataset)</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<ol start="5" style="list-style-type: decimal">
+<li><strong><code>.step_attrition</code> - define how step attrition plot should be rendered</strong></li>
+</ol>
+<p>Required parameters:</p>
+<ul>
+<li><code>source</code> - Source object.</li>
+<li><code>id</code> - Id of the attrition plot output.</li>
+<li><code>cohort</code> - Cohort object.</li>
+<li><code>session</code> - Shiny session object.</li>
+<li><code>...</code> - Unused, added for S3 integration only.</li>
+</ul>
+<p>Details:</p>
+<ul>
+<li>The method should return list of two objects, output - returning UI output placeholder (having optional user input controllers affecting the output, see “tblist” example below) and render - rendering function defining the plot generating expression.</li>
+<li>Within rendering function use <code>cohort$show_attrition</code> method to generate the plot (and pass required parameters to it when needed, see “tblist” class example where <code>dataset</code> is needed).</li>
+<li>Use provided <code>id</code> parameter to as an id of plot output placeholder.</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li><code>shinyCohortBuilder</code> - default method</li>
+</ul>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>.step_attrition.default <span class="ot">&lt;-</span> <span class="cf">function</span>(source, id, cohort, session, ...) {</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  ns <span class="ot">&lt;-</span> session<span class="sc">$</span>ns</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">render =</span> shiny<span class="sc">::</span><span class="fu">renderPlot</span>({</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>      cohort<span class="sc">$</span><span class="fu">show_attrition</span>()</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    }),</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">output =</span> shiny<span class="sc">::</span><span class="fu">plotOutput</span>(id)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<ul>
+<li><code>shinyCohortBuilder</code> - tblist data class</li>
+</ul>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>.step_attrition.tblist <span class="ot">&lt;-</span> <span class="cf">function</span>(source, id, cohort, session, ...) {</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  ns <span class="ot">&lt;-</span> session<span class="sc">$</span>ns</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  choices <span class="ot">&lt;-</span> <span class="fu">names</span>(source<span class="sc">$</span>attributes<span class="sc">$</span>datasets)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">render =</span> shiny<span class="sc">::</span><span class="fu">renderPlot</span>({</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>      cohort<span class="sc">$</span><span class="fu">show_attrition</span>(<span class="at">dataset =</span> session<span class="sc">$</span>input<span class="sc">$</span>attrition_input)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    }),</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">output =</span> shiny<span class="sc">::</span><span class="fu">tagList</span>(</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>      shiny<span class="sc">::</span><span class="fu">selectInput</span>(<span class="fu">ns</span>(<span class="st">&quot;attrition_input&quot;</span>), <span class="st">&quot;Choose dataset&quot;</span>, choices),</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>      shiny<span class="sc">::</span><span class="fu">plotOutput</span>(id)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<ol start="6" style="list-style-type: decimal">
+<li><strong><code>.custom_attrition</code> - (optional) a custom method used for your own version of attrition plot</strong></li>
+</ol>
+<p>The parameters and output structure is the same as for <code>.step_attrition</code>. The main difference is that you should put your custom logic for generating attrition (i.e. using a specific package meant for this).</p>
+<p>When the method is defined, the attrition will be printed inside an extra tab of attrition modal.</p>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
