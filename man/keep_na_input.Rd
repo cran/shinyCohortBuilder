@@ -6,9 +6,20 @@
 \alias{.update_keep_na_input}
 \title{Generate NA's filter selection GUI input}
 \usage{
-.keep_na_input(input_id, filter, cohort)
+.keep_na_input(
+  input_id,
+  filter,
+  cohort,
+  msg_fun = function(x) glue::glue("Keep missing values ({x})")
+)
 
-.update_keep_na_input(session, input_id, filter, cohort)
+.update_keep_na_input(
+  session,
+  input_id,
+  filter,
+  cohort,
+  msg_fun = function(x) glue::glue("Keep missing values ({x})")
+)
 }
 \arguments{
 \item{input_id}{Id of the keep na input.}
@@ -16,6 +27,9 @@
 \item{filter}{Filter object.}
 
 \item{cohort}{Cohort object.}
+
+\item{msg_fun}{Function taking number of missing values as an argument and
+returning missing values label.}
 
 \item{session}{Shiny session object.}
 }

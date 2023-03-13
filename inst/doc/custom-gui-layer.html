@@ -14,25 +14,38 @@
 
 <title>Creating custom source extension</title>
 
-<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
 
 
 <style type="text/css">
-  code {
-    white-space: pre;
-  }
-  .sourceCode {
-    overflow: visible;
-  }
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
@@ -50,55 +63,54 @@ pre > code.sourceCode { white-space: pre-wrap; }
 pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
-  { counter-reset: source-line 0; }
+{ counter-reset: source-line 0; }
 pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
+{ position: relative; left: -4em; counter-increment: source-line; }
 pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
 div.sourceCode
-  {   }
+{ }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -107,13 +119,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -125,7 +144,187 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -141,19 +340,34 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<p>If you want to use <code>shinyCohortBuilder</code> with a custom source type, a set of methods needs to be defined.</p>
-<p>Currently there exists one official extension <code>cohortBuilder.db</code> package that allows you to use <code>shinyCohortBuilder</code> (and <code>cohortBuilder</code>) with database connections.</p>
-<p>The goal of this document is to explain how to create custom extensions to <code>shinyCohortBuilder</code>.</p>
-<p>In general to create the custom layer you need to create an R package where:</p>
+<p>If you want to use <code>shinyCohortBuilder</code> with a custom
+source type, a set of methods needs to be defined.</p>
+<p>Currently there exists one official extension
+<code>cohortBuilder.db</code> package that allows you to use
+<code>shinyCohortBuilder</code> (and <code>cohortBuilder</code>) with
+database connections.</p>
+<p>The goal of this document is to explain how to create custom
+extensions to <code>shinyCohortBuilder</code>.</p>
+<p>In general to create the custom layer you need to create an R package
+where:</p>
 <ol style="list-style-type: decimal">
-<li>The custom Source extension for <code>cohortBuilder</code> methods is implemented (see. <code>vignettes(&quot;custom-extensions&quot;, package = &quot;cohortBuilder&quot;)</code>).</li>
-<li>A set of integration S3 methods for <code>shinyCohortBuilder</code> are implemented.</li>
-<li>Extra filters (added in the extension) GUI layers are implemented (see <a href="gui-filter-layer.html">custom GUI filters</a>).</li>
+<li>The custom Source extension for <code>cohortBuilder</code> methods
+is implemented (see.
+<code>vignettes(&quot;custom-extensions&quot;, package = &quot;cohortBuilder&quot;)</code>).</li>
+<li>A set of integration S3 methods for <code>shinyCohortBuilder</code>
+are implemented.</li>
+<li>Extra filters (added in the extension) GUI layers are implemented
+(see <a href="gui-filter-layer.html">custom GUI filters</a>).</li>
 </ol>
-<p>If you have <code>cohortBuilder</code> integration ready for the selected source <code>type</code> (a new package named <code>cohortBuilder.&lt;type&gt;</code>), the next step is to add <code>shinyCohortBuilder</code> integration.</p>
-<p>Below we describe all the required and optional methods you need to define within the created package.</p>
+<p>If you have <code>cohortBuilder</code> integration ready for the
+selected source <code>type</code> (a new package named
+<code>cohortBuilder.&lt;type&gt;</code>), the next step is to add
+<code>shinyCohortBuilder</code> integration.</p>
+<p>Below we describe all the required and optional methods you need to
+define within the created package.</p>
 <ol style="list-style-type: decimal">
-<li><strong><code>.render_filters</code> - method used to define structure for filters rendering in a selected step</strong></li>
+<li><strong><code>.render_filters</code> - method used to define
+structure for filters rendering in a selected step</strong></li>
 </ol>
 <p>Required parameters:</p>
 <ul>
@@ -165,11 +379,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 <p>Details:</p>
 <ul>
-<li>The method should return HTML structure including statistics output placeholder and a list of filter renderings.</li>
-<li>In order to get all the filters included in the selected step use <code>cohort$get_step(step_id)$filters</code>.</li>
-<li>Data statistics outputs should be consistent with <code>.update_data_stats</code> method described below.</li>
-<li>Each filter should be rendered with usage of <code>.render_filter</code> method.</li>
-<li>List of filters rendering should be wrapped into <code>shiny::div(class = &quot;cb_filters&quot;, `data-step_id` = step_id)</code>.</li>
+<li>The method should return HTML structure including statistics output
+placeholder and a list of filter renderings.</li>
+<li>In order to get all the filters included in the selected step use
+<code>cohort$get_step(step_id)$filters</code>.</li>
+<li>Data statistics outputs should be consistent with
+<code>.update_data_stats</code> method described below.</li>
+<li>Each filter should be rendered with usage of
+<code>.render_filter</code> method.</li>
+<li>List of filters rendering should be wrapped into
+<code>shiny::div(class = &quot;cb_filters&quot;, `data-step_id` = step_id)</code>.</li>
 </ul>
 <p>Examples:</p>
 <ul>
@@ -194,7 +413,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    purrr<span class="sc">::</span><span class="fu">imap</span>(<span class="sc">~</span> <span class="fu">dataset_filters</span>(.x, .y, step_id, cohort, <span class="at">ns =</span> ns)) <span class="sc">%&gt;%</span></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    shiny<span class="sc">::</span><span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;cb_filters&quot;</span>, <span class="st">`</span><span class="at">data-step_id</span><span class="st">`</span> <span class="ot">=</span> step_id)</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<p>In this example we group all the defined filters by related datasets from source (<code>group_filters</code>), and attach a separate statistics placeholder for each dataset (dataset_filters).</p>
+<p>In this example we group all the defined filters by related datasets
+from source (<code>group_filters</code>), and attach a separate
+statistics placeholder for each dataset (dataset_filters).</p>
 <ul>
 <li><code>cohortBuilder.db</code> - db data class</li>
 </ul>
@@ -206,7 +427,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">div</span>(<span class="at">class =</span> <span class="st">&quot;cb_filters&quot;</span>, <span class="st">`</span><span class="at">data-step_id</span><span class="st">`</span> <span class="ot">=</span> step_id)</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
-<li><strong><code>.update_data_stats</code> - logic for updating data statistics</strong></li>
+<li><strong><code>.update_data_stats</code> - logic for updating data
+statistics</strong></li>
 </ol>
 <p>Required parameters:</p>
 <ul>
@@ -218,12 +440,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 <p>Details:</p>
 <ul>
-<li>The function should define rendering output for consistent with the output placeholder stated within <code>.render_filters</code>.</li>
-<li>It’s recommended the statistics are taken from the Cohort cache <code>cohort$get_cache(step_id, state = &quot;pre&quot;)</code>.</li>
-<li>It’s recommended the output performs previous step data validation (in terms of data existence) and returns descriptive message to the user.</li>
-<li>Use <code>cohort$attributes$stats</code> to get displayed statistics state chosen by the user (“pre”, “post”, both or NULL).</li>
-<li>For printing the statistics use <code>.pre_post_stats</code> (or <code>.pre_post_stats_text</code>)` which returns formatted statistics output.</li>
-<li>You may directly assign the rendering to the output or use <code>.sendOutput</code> method (useful when sending output in loop see “tblist” source example below).</li>
+<li>The function should define rendering output for consistent with the
+output placeholder stated within <code>.render_filters</code>.</li>
+<li>It’s recommended the statistics are taken from the Cohort cache
+<code>cohort$get_cache(step_id, state = &quot;pre&quot;)</code>.</li>
+<li>It’s recommended the output performs previous step data validation
+(in terms of data existence) and returns descriptive message to the
+user.</li>
+<li>Use <code>cohort$attributes$stats</code> to get displayed statistics
+state chosen by the user (“pre”, “post”, both or NULL).</li>
+<li>For printing the statistics use <code>.pre_post_stats</code> (or
+<code>.pre_post_stats_text</code>)` which returns formatted statistics
+output.</li>
+<li>You may directly assign the rendering to the output or use
+<code>.sendOutput</code> method (useful when sending output in loop see
+“tblist” source example below).</li>
 </ul>
 <p>Examples:</p>
 <ul>
@@ -290,19 +521,27 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
-<li><strong><code>autofilter</code> (optional) - automatically generate filters configuration based on Source data</strong></li>
+<li><strong><code>autofilter</code> (optional) - automatically generate
+filters configuration based on Source data</strong></li>
 </ol>
 <p>Required parameters:</p>
 <ul>
 <li><code>source</code> - Source object,</li>
-<li><code>attach_as</code> - Should filters be added as the first step (<code>&quot;step&quot;</code>) or as available filters for configuration panel (<code>&quot;meta&quot;</code>),</li>
+<li><code>attach_as</code> - Should filters be added as the first step
+(<code>&quot;step&quot;</code>) or as available filters for configuration panel
+(<code>&quot;meta&quot;</code>),</li>
 <li><code>...</code> - Unused, added for S3 integration only.</li>
 </ul>
 <p>Details:</p>
 <ul>
-<li>Generate filters based on Source data (i.e. column types) using <code>cohortBuilder::filter</code>.</li>
-<li>When <code>attach_as = &quot;step&quot;</code> wrap them with <code>cohortBuilder::step</code> and attach to the Source using <code>add_step</code> method.</li>
-<li>When <code>attach_as = &quot;meta&quot;</code> attach filters to the <code>available_filters</code> Source attribute (<code>source$attributes$available_filters</code>).</li>
+<li>Generate filters based on Source data (i.e. column types) using
+<code>cohortBuilder::filter</code>.</li>
+<li>When <code>attach_as = &quot;step&quot;</code> wrap them with
+<code>cohortBuilder::step</code> and attach to the Source using
+<code>add_step</code> method.</li>
+<li>When <code>attach_as = &quot;meta&quot;</code> attach filters to the
+<code>available_filters</code> Source attribute
+(<code>source$attributes$available_filters</code>).</li>
 <li>The method should return Source object.</li>
 </ul>
 <p>Examples:</p>
@@ -327,7 +566,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(source)</span>
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <ol start="4" style="list-style-type: decimal">
-<li><strong><code>.available_filters_choices</code> - define choices for new step configuration panel</strong></li>
+<li><strong><code>.available_filters_choices</code> - define choices for
+new step configuration panel</strong></li>
 </ol>
 <p>Required parameters:</p>
 <ul>
@@ -337,8 +577,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 <p>Details:</p>
 <ul>
-<li>The function should return <code>shinyWidgets::prepare_choices</code> output.</li>
-<li>The argument <code>value</code> of <code>prepare_choices</code> should point to filter ids.</li>
+<li>The function should return
+<code>shinyWidgets::prepare_choices</code> output.</li>
+<li>The argument <code>value</code> of <code>prepare_choices</code>
+should point to filter ids.</li>
 </ul>
 <p>Examples:</p>
 <ul>
@@ -367,7 +609,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  shinyWidgets<span class="sc">::</span><span class="fu">prepare_choices</span>(choices, name, id, dataset)</span>
 <span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <ol start="5" style="list-style-type: decimal">
-<li><strong><code>.step_attrition</code> - define how step attrition plot should be rendered</strong></li>
+<li><strong><code>.step_attrition</code> - define how step attrition
+plot should be rendered</strong></li>
 </ol>
 <p>Required parameters:</p>
 <ul>
@@ -379,9 +622,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 <p>Details:</p>
 <ul>
-<li>The method should return list of two objects, output - returning UI output placeholder (having optional user input controllers affecting the output, see “tblist” example below) and render - rendering function defining the plot generating expression.</li>
-<li>Within rendering function use <code>cohort$show_attrition</code> method to generate the plot (and pass required parameters to it when needed, see “tblist” class example where <code>dataset</code> is needed).</li>
-<li>Use provided <code>id</code> parameter to as an id of plot output placeholder.</li>
+<li>The method should return list of two objects, output - returning UI
+output placeholder (having optional user input controllers affecting the
+output, see “tblist” example below) and render - rendering function
+defining the plot generating expression.</li>
+<li>Within rendering function use <code>cohort$show_attrition</code>
+method to generate the plot (and pass required parameters to it when
+needed, see “tblist” class example where <code>dataset</code> is
+needed).</li>
+<li>Use provided <code>id</code> parameter to as an id of plot output
+placeholder.</li>
 </ul>
 <p>Examples:</p>
 <ul>
@@ -415,10 +665,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <ol start="6" style="list-style-type: decimal">
-<li><strong><code>.custom_attrition</code> - (optional) a custom method used for your own version of attrition plot</strong></li>
+<li><strong><code>.custom_attrition</code> - (optional) a custom method
+used for your own version of attrition plot</strong></li>
 </ol>
-<p>The parameters and output structure is the same as for <code>.step_attrition</code>. The main difference is that you should put your custom logic for generating attrition (i.e. using a specific package meant for this).</p>
-<p>When the method is defined, the attrition will be printed inside an extra tab of attrition modal.</p>
+<p>The parameters and output structure is the same as for
+<code>.step_attrition</code>. The main difference is that you should put
+your custom logic for generating attrition (i.e. using a specific
+package meant for this).</p>
+<p>When the method is defined, the attrition will be printed inside an
+extra tab of attrition modal.</p>
 
 
 
