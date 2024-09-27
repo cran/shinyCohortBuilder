@@ -1,11 +1,11 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 library(shinyCohortBuilder)
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  library(shiny)
 #  library(cohortBuilder)
 #  library(shinyCohortBuilder)
@@ -45,7 +45,7 @@ library(shinyCohortBuilder)
 #  
 #  shinyApp(ui, server)
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  library(shiny)
 #  library(cohortBuilder)
 #  library(shinyCohortBuilder)

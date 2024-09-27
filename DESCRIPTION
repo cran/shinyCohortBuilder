@@ -1,7 +1,7 @@
 Package: shinyCohortBuilder
 Type: Package
 Title: Modular Cohort-Building Framework for Analytical Dashboards
-Version: 0.2.1
+Version: 0.3.0
 Authors@R: 
     c(person('Krystian', 'Igras', 
              email = 'krystian8207@gmail.com', 
@@ -28,22 +28,26 @@ License: MIT + file LICENSE
 Depends: R (>= 3.5.0)
 Imports: magrittr, glue, bslib, jsonlite, purrr, ggplot2, ggiraph,
         htmltools, shiny (>= 1.7.0), shinyWidgets (>= 0.7.0),
-        htmlwidgets, dplyr, cohortBuilder (>= 0.2.0), tryCatchLog,
+        htmlwidgets, dplyr, cohortBuilder (>= 0.3.0), tryCatchLog,
         highr, shinyGizmo (>= 0.4.2), rlang (>= 1.0), tibble, lifecycle
-Suggests: pkgload, packer, sass, knitr, rmarkdown, testthat (>= 3.0.0)
+Suggests: queryBuilder (>= 0.1.0), shinyQueryBuilder (>= 0.1.0),
+        pkgload, packer, sass, knitr, rmarkdown, testthat (>= 3.0.0)
 Encoding: UTF-8
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 VignetteBuilder: knitr
+URL: https://r-world-devs.github.io/shinyCohortBuilder/,
+        https://github.com/r-world-devs/shinyCohortBuilder
+BugReports: https://github.com/r-world-devs/shinyCohortBuilder/issues
 Collate: 'shinyCohortBuilder-package.R' 'ui_utils.R' 'control_utils.R'
         'actions.R' 'renders.R' 'filter_discrete.R' 'filter_range.R'
         'filter_date_range.R' 'filter_discrete_text.R'
-        'filter_multi_discrete.R' 'app.R' 'cb_layer.R' 'source.R'
-        'source_tblist.R'
+        'filter_multi_discrete.R' 'filter_query.R' 'app.R' 'cb_layer.R'
+        'source.R' 'source_tblist.R'
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2023-08-28 08:15:54 UTC; krystiai
+Packaged: 2024-09-27 09:07:23 UTC; krystiai
 Author: Krystian Igras [cre, aut],
   Kamil Wais [aut],
   Adam Foryś [ctb]
 Repository: CRAN
-Date/Publication: 2023-08-28 09:20:02 UTC
+Date/Publication: 2024-09-27 15:10:03 UTC

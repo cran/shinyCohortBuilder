@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -23,7 +23,7 @@ class(evaled_filter)
 ## -----------------------------------------------------------------------------
 str(evaled_filter, give.attr = FALSE)
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  .gui_filter.discrete <- function(filter, ...) {
 #    list(
 #      input = function(input_id, cohort) {
@@ -45,46 +45,46 @@ str(evaled_filter, give.attr = FALSE)
 #    )
 #  }
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  do.call(
 #    shiny::checkboxGroupInput,
 #    discrete_input_params(filter, input_id, cohort, ...)
 #  )
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  if (!cohort$get_cache(step_id, filter_id, state = "pre")$n_data) {
 #    return(
 #      list(inputId = input_id, choices = character(0), selected = character(0), label = NULL)
 #    )
 #  }
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  step_id <- filter$step_id
 #  filter_id <- filter$id
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  filter_params <- filter$get_params()
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  filter_params[[filter$input_param]]
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  names(
 #    cohort$get_cache(step_id, filter_id, state = "pre")$choices
 #  )
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  names(
 #    cohort$get_cache(step_id, filter_id, state = "pre")$choices
 #  )
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  !is.null(filter_params$value_mapping)
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  cohort$get_source()$attributes$value_mappings[[filter_params$value_mapping]]
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  .pre_post_stats_text(
 #    name = <choices labels names vector>,
 #    current = <current step statistics vector>,
@@ -100,7 +100,7 @@ str(evaled_filter, give.attr = FALSE)
   stats = c("pre", "post")
 )
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  .gui_filter.discrete <- function(filter, ...) {
 #    list(
 #      feedback = function(input_id, cohort, empty = FALSE) {
@@ -138,11 +138,11 @@ str(evaled_filter, give.attr = FALSE)
 #    )
 #  }
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  step_id <- filter$step_id
 #  filter_id <- filter$id
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  .gui_filter.discrete <- function(filter, ...) {
 #    list(
 #      server = function(input_id, input, output, session, cohort) {
@@ -162,7 +162,7 @@ str(evaled_filter, give.attr = FALSE)
 #    )
 #  }
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  .gui_filter.discrete <- function(filter, ...) {
 #    list(
 #      update = function(session, input_id, cohort, reset = FALSE, ...) {
@@ -180,11 +180,11 @@ str(evaled_filter, give.attr = FALSE)
 #    )
 #  }
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  names(
 #    cohort$get_cache(step_id, filter_id, state = "pre")$choices
 #  )
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  label = if (update) character(0) else NULL
 

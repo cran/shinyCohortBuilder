@@ -13,18 +13,18 @@
 #' The list of possible actions:
 #'
 #' \itemize{
-#' \item{update_filter}{ Calls `shinyCohortBuilder:::gui_update_filter` that triggers filter arguments update.}
-#' \item{add_step}{ Calls `shinyCohortBuilder:::gui_add_step` that triggers adding a new filtering step (based on configuration of the previous one).}
-#' \item{rm_step}{ Calls `shinyCohortBuilder:::gui_rm_step` used to remove a selected filtering step.},
-#' \item{clear_step}{ Calls `shinyCohortBuilder:::gui_clear_step` used to clear filters configuration in selected step.}
-#' \item{update_step}{ Calls `shinyCohortBuilder:::gui_update_step` used to update filters and feedback plots for the specific filter GUI panel.}
-#' \item{update_data_stats}{ Calls `shinyCohortBuilder:::gui_update_data_stats` that is called to update data statistics. }
-#' \item{show_repro_code}{ Calls `shinyCohortBuilder:::gui_show_repro_code` that is used to show reproducible code. }
-#' \item{run_step}{ Calls `shinyCohortBuilder:::gui_run_step` used to trigger specific step data calculation. }
-#' \item{show_state}{ Calls `shinyCohortBuilder:::gui_show_state` that is used to show filtering panel state json. }
-#' \item{input_state}{ Calls `shinyCohortBuilder:::gui_input_state` that is used to generate modal in which filtering panel state can be provided (as json). }
-#' \item{restore_state}{ Calls `shinyCohortBuilder:::gui_restore_state` used for restoring filtering panel state based on provided json. }
-#' \item{show_attrition}{ Calls `shinyCohortBuilder:::gui_show_attrition` a method used to show attrition data plot(s).}
+#' \item{\code{update_filter} - Calls `shinyCohortBuilder:::gui_update_filter` that triggers filter arguments update.}
+#' \item{\code{add_step} - Calls `shinyCohortBuilder:::gui_add_step` that triggers adding a new filtering step (based on configuration of the previous one).}
+#' \item{\code{rm_step} - Calls `shinyCohortBuilder:::gui_rm_step` used to remove a selected filtering step.},
+#' \item{\code{clear_step} - Calls `shinyCohortBuilder:::gui_clear_step` used to clear filters configuration in selected step.}
+#' \item{\code{update_step} - Calls `shinyCohortBuilder:::gui_update_step` used to update filters and feedback plots for the specific filter GUI panel.}
+#' \item{\code{update_data_stats} - Calls `shinyCohortBuilder:::gui_update_data_stats` that is called to update data statistics. }
+#' \item{\code{show_repro_code} - Calls `shinyCohortBuilder:::gui_show_repro_code` that is used to show reproducible code. }
+#' \item{\code{run_step} - Calls `shinyCohortBuilder:::gui_run_step` used to trigger specific step data calculation. }
+#' \item{\code{show_state} - Calls `shinyCohortBuilder:::gui_show_state` that is used to show filtering panel state json. }
+#' \item{\code{input_state} - Calls `shinyCohortBuilder:::gui_input_state` that is used to generate modal in which filtering panel state can be provided (as json). }
+#' \item{\code{restore_state} - Calls `shinyCohortBuilder:::gui_restore_state` used for restoring filtering panel state based on provided json. }
+#' \item{\code{show_attrition} - Calls `shinyCohortBuilder:::gui_show_attrition` a method used to show attrition data plot(s).}
 #' }
 #'
 #' Both `.trigger_action` and `.trigger_action_js` methods are exported for advanced use only.
@@ -364,15 +364,18 @@ update_next_step <- function(cohort, step_id, reset, session) {
   }
 }
 
-input_val_handler <- function(val) {
-  if (is.list(val)) {
+input_val_handler <- function(val, binding) {
+  handler <- NULL
+  if (length(binding) && binding != "" && !is.na(binding)) {
+    handler <- `%:::%`("shiny", "inputHandlers")$get(binding)
+  }
+  if (!is.null(handler)) {
+    return(handler(val))
+  } else if (is.list(val)) {
     if (is.null(names(val))) {
       return(unlist(val, recursive = TRUE))
     }
-    return(
-      val %>% purrr::map(unlist) %>%
-        purrr::map_if(~all(.x %in% c("TRUE", "FALSE", "NA")), as.logical)
-    )
+    return(val)
   } else {
     return(val)
   }
@@ -381,12 +384,10 @@ input_val_handler <- function(val) {
 convert_input_value <- function(changed_input, step_id, filter_id, cohort, update_active) {
   # todo handle case when no value parameter defined (some filters can work like that)
 
-  changed_input[changed_input$input_name] <- list(input_val_handler(changed_input$input_value))
-  is_date_filter <- inherits(cohort$get_filter(step_id, filter_id), "date_range")
+  changed_input[changed_input$input_name] <- list(
+    input_val_handler(changed_input$input_value, changed_input$binding)
+  )
   update_keep_na <- changed_input$input_name == "keep_na"
-  if (is_date_filter && !update_active && !update_keep_na) {
-    changed_input[[changed_input$input_name]] <- as.Date(changed_input[[changed_input$input_name]])
-  }
   changed_input$input_name <- NULL
   changed_input$input_value <- NULL
 
@@ -508,7 +509,8 @@ gui_show_state <- function(cohort, changed_input, session) {
     shiny::tags$code(
       cohort$get_state(json = TRUE) %>%
         shiny::HTML()
-    )
+    ),
+    easyClose = TRUE
   ))
 }
 
@@ -540,6 +542,7 @@ gui_input_state <- function(cohort, changed_input, session) {
       divider("OR"),
       shiny::textAreaInput(ns(string_id), "Paste json state")
     ),
+    easyClose = TRUE,
     footer = shiny::tagList(
       shiny::modalButton("Confirm") %>%
         shiny::tagAppendAttributes(
@@ -669,6 +672,7 @@ gui_show_step_filter_modal <- function(cohort, changed_input, session) {
           )
         )
       ),
+      easyClose = TRUE,
       footer = shiny::tagList(
         shinyGizmo::valueButton(
           inputId = ns("add_step_configured"),
@@ -746,13 +750,39 @@ gui_show_repro_code <- function(cohort, changed_input, session) {
   shiny::showModal(shiny::modalDialog(
     size = "xl",
     title = "Reproducible code",
-    shiny::tags$code(
-      class = "hl background",
-      cohort$get_code(width = I(120), output = FALSE)$text.tidy %>%
-        highr::hi_html() %>%
-        purrr::map_chr(add_trailing_space) %>%
-        paste(collapse = "</br>") %>%
-        shiny::HTML()
+    shiny::tags$pre(
+      .noWS = c("after-begin", "before-end"),
+      shiny::tags$code(
+        id = "scb-reproducible-code",
+        class = "hl background",
+        cohort$get_code(width = I(120), output = FALSE)$text.tidy %>%
+          highr::hi_html() %>%
+          purrr::map_chr(add_trailing_space) %>%
+          paste(collapse = "\n") %>%
+          shiny::HTML()
+      )
+    ),
+    easyClose = TRUE,
+    footer = shiny::tagList(
+      button(
+        id = "scb-copy-to-clipboard",
+        label = "",
+        title = "Copy to Clipboard",
+        icon = shiny::icon("copy"),
+        onclick = '
+        $(this).hide();
+        navigator.clipboard.writeText($("#scb-reproducible-code")[0].innerText);
+        $("#scb-copy-to-clipboard-tooltip").show().fadeOut(2000, function() {
+            $("#scb-copy-to-clipboard").show();
+        });
+      '
+      ),
+      button(
+        id = "scb-copy-to-clipboard-tooltip",
+        icon = shiny::icon("check"),
+        style = "border: 0px; background: none; display: none",
+      ),
+      shiny::modalButton("Dismiss")
     )
   ))
 }
@@ -762,8 +792,8 @@ gui_show_repro_code <- function(cohort, changed_input, session) {
 #' @description
 #' The method should return list of two object:
 #' \itemize{
-#'   \item{render}{ Rendering expression of attrition output.}
-#'   \item{output}{ Output expression related to rendering (with id equal to `id` parameter).}
+#'   \item{\code{render} - Rendering expression of attrition output.}
+#'   \item{\code{output} - Output expression related to rendering (with id equal to `id` parameter).}
 #' }
 #' For example:
 #' \preformatted{
@@ -985,7 +1015,8 @@ gui_show_attrition <- function(cohort, changed_input, session) {
   shiny::showModal(shiny::modalDialog(
     size = "l",
     title = "Cohort attrition",
-    ui
+    ui,
+    easyClose = TRUE
   ))
 }
 

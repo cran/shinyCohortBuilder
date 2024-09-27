@@ -1,11 +1,11 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 library(shinyCohortBuilder)
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  .render_filters.default <- function(source, cohort, step_id, ns, ...) {
 #    step <- cohort$get_step(step_id)
 #    shiny::tagList(
@@ -16,7 +16,7 @@ library(shinyCohortBuilder)
 #    )
 #  }
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  .render_filters.tblist <- function(source, cohort, step_id, ns, ...) {
 #    step <- cohort$get_step(step_id)
 #  
@@ -25,7 +25,7 @@ library(shinyCohortBuilder)
 #      shiny::div(class = "cb_filters", `data-step_id` = step_id)
 #  }
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  render_filters.db <- function(source, cohort, step_id, ns) {
 #    step <- cohort$get_step(step_id)
 #  
@@ -34,7 +34,7 @@ library(shinyCohortBuilder)
 #      div(class = "cb_filters", `data-step_id` = step_id)
 #  }
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  .update_data_stats.default <- function(source, step_id, cohort, session, ...) {
 #    ns <- session$ns
 #    stats <- cohort$attributes$stats
@@ -49,7 +49,7 @@ library(shinyCohortBuilder)
 #    })
 #  }
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  .update_data_stats.tblist <- function(source, step_id, cohort, session, ...) {
 #    stats <- cohort$attributes$stats
 #    step <- cohort$get_step(step_id)
@@ -74,7 +74,7 @@ library(shinyCohortBuilder)
 #    )
 #  }
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  update_data_stats.db <- function(source, step_id, cohort, session) {
 #    stats <- cohort$attributes$stats
 #  
@@ -94,7 +94,7 @@ library(shinyCohortBuilder)
 #    )
 #  }
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  autofilter.tblist <- function(source, attach_as = c("step", "meta"), ...) {
 #    attach_as <- rlang::arg_match(attach_as)
 #    step_rule <- source$dtconn %>%
@@ -113,7 +113,7 @@ library(shinyCohortBuilder)
 #    return(source)
 #  }
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  .available_filters_choices.tblist <- function(source, cohort, ...) {
 #  
 #    available_filters <- cohort$attributes$available_filters
@@ -137,7 +137,7 @@ library(shinyCohortBuilder)
 #    shinyWidgets::prepare_choices(choices, name, id, dataset)
 #  }
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  .step_attrition.default <- function(source, id, cohort, session, ...) {
 #    ns <- session$ns
 #  
@@ -149,7 +149,7 @@ library(shinyCohortBuilder)
 #    )
 #  }
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  .step_attrition.tblist <- function(source, id, cohort, session, ...) {
 #    ns <- session$ns
 #    choices <- names(source$attributes$datasets)

@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -13,7 +13,7 @@ iris <- tibble::as.tibble(iris)
 options("tibble.print_max" = 5)
 options("tibble.print_min" = 5)
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  library(shiny)
 #  library(cohortBuilder)
 #  library(shinyCohortBuilder)
@@ -34,7 +34,7 @@ options("tibble.print_min" = 5)
 #  
 #  shinyApp(ui, server)
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  library(shiny)
 #  library(cohortBuilder)
 #  library(shinyCohortBuilder)
@@ -72,7 +72,7 @@ iris_cohort <- cohort(iris_source)
 
 sum_up(iris_cohort)
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  set_source(
 #    ...,
 #    available_filters = list(
@@ -82,6 +82,6 @@ sum_up(iris_cohort)
 #    )
 #  )
 
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 options(old_opts)
 
