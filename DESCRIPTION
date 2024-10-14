@@ -1,7 +1,7 @@
 Package: shinyCohortBuilder
 Type: Package
 Title: Modular Cohort-Building Framework for Analytical Dashboards
-Version: 0.3.0
+Version: 0.3.1
 Authors@R: 
     c(person('Krystian', 'Igras', 
              email = 'krystian8207@gmail.com', 
@@ -45,9 +45,9 @@ Collate: 'shinyCohortBuilder-package.R' 'ui_utils.R' 'control_utils.R'
         'source.R' 'source_tblist.R'
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2024-09-27 09:07:23 UTC; krystiai
+Packaged: 2024-10-14 08:04:15 UTC; krystiai
 Author: Krystian Igras [cre, aut],
   Kamil Wais [aut],
   Adam Foryś [ctb]
 Repository: CRAN
-Date/Publication: 2024-09-27 15:10:03 UTC
+Date/Publication: 2024-10-14 09:10:02 UTC

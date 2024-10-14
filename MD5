@@ -1,13 +1,13 @@
-c3d07bec7cb92f72c981b2eee8f4ba29 *DESCRIPTION
+9d0ff68b0254a2c760eab07850e31fbd *DESCRIPTION
 159e212a075d4235132b116a2f942ba1 *LICENSE
 b08dae225a4df6a5c37a5f25f371a099 *NAMESPACE
-301ea00701e03920e799e32ec04404dd *NEWS.md
+82dbf0b3e6b0aa31bc69cd95d1b8cf67 *NEWS.md
 55b04367ba33b5ed52a3838cab7a0733 *R/actions.R
 7b5b4aca15e5ab1bdf01895620b920e5 *R/app.R
 c8bba5475a92d9a41e8c3ce5f2452dd7 *R/cb_layer.R
 9a0a83fdf8cc03b4bc027121d2f00a58 *R/control_utils.R
 32fb48ed3f7a004275dab91832d00fa9 *R/filter_date_range.R
-68adc3188acf46dd1448da8ff7eda009 *R/filter_discrete.R
+588a89c88574f8b923a2e3d116c306ca *R/filter_discrete.R
 f03bfd02b6cecdf236805ac7968ec8db *R/filter_discrete_text.R
 ab71e81baf4931e751c61228eda4a8cd *R/filter_multi_discrete.R
 2cf0ce45647e901d2c0b712178b55883 *R/filter_query.R
@@ -17,7 +17,7 @@ ab71e81baf4931e751c61228eda4a8cd *R/filter_multi_discrete.R
 46a830788a4da42649efbf05665241d1 *R/source.R
 e38137103c182740e3729172bc9621f4 *R/source_tblist.R
 c6746d3611b2c33289a267e4d23da96e *R/ui_utils.R
-3c9828b137d8231e726d1027cf64970e *README.md
+b86bc541f241f6dd8950c5547961b52b *README.md
 0d81da110f8d03557275495d6c392f80 *build/vignette.rds
 35ef79f5622a30e43170107ef4e5d52c *inst/doc/custom-gui-layer.R
 62f2e6655f23848dea77db5fa4fb9d8d *inst/doc/custom-gui-layer.Rmd
@@ -30,7 +30,7 @@ b4f2ddd65fc1a9c66226c2ce1e23bbb0 *inst/doc/package-options.R
 dfdb982653b022aa6b129cbcb3fcb2e4 *inst/doc/package-options.html
 9e406f97913cddf5fd43c4626cbd7b1a *inst/doc/shinyCohortBuilder.R
 2c50227a81fc0128b586808061b25f2a *inst/doc/shinyCohortBuilder.Rmd
-3d5e5e383619a86b0743bbdbc7ac1eb4 *inst/doc/shinyCohortBuilder.html
+c2cecb04af753373d3d90526f50fcb2d *inst/doc/shinyCohortBuilder.html
 ee8e7ecd1471eb31df1cc206c1eef565 *inst/doc/updating-source.R
 6f0440b73e0894395a50d93e4bba7419 *inst/doc/updating-source.Rmd
 f4dad0f90e6a950c1cd0a90eb1bf65c5 *inst/doc/updating-source.html
